@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
   int sockfd;
   socklen_t slen = sizeof(si_other);
 
-  if (-1 == (sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))) {
+  if (-1 == (sockfd = socket(AF_INET, SOCK_DGRAM, 0))) {
     perror("socket");
     exit(1);
   }
@@ -32,11 +32,27 @@ int main(int argc, char **argv) {
 
   si_other.sin_family = AF_INET;
   si_other.sin_port = htons(port);
+  si_other.sin_addr.s_addr = inet_addr(host);
 
-  if (0 == inet_aton(host, &si_other.sin_addr)) {
-    perror("inet_aton");
+  if (0 != connect(sockfd, (struct sockaddr *)&si_other, sizeof(si_other))) {
+    perror("connect");
     exit(1);
   }
+
+  buffer[0] = 15;
+
+  if (-1 == sendto(sockfd, buffer, 4, 0, (struct sockaddr *)&si_other, slen)) {
+    perror("sendto");
+    exit(1);
+  }
+
+  if (-1 == recvfrom(sockfd, buffer, BUFFER_LENGTH, 0,
+                     (struct sockaddr *)&si_other, &slen)) {
+    perror("recvfrom");
+    exit(1);
+  }
+
+  printf("successfully connected to %s:%d\n", host, port);
 
   while (1) {
     printf("Enter a message: ");

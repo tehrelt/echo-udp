@@ -56,7 +56,19 @@ int main(int argc, char **argv) {
       exit(1);
     }
 
-    printf("Data:\n%s\n", buf);
+    if (*buf == 15) {
+      if (-1 == sendto(s, "recieved", strlen("recieved"), 0,
+                       (struct sockaddr *)&si_other, slen)) {
+        perror("sendto");
+        exit(1);
+      }
+
+      printf("incoming connection from %s\n", inet_ntoa(si_other.sin_addr));
+
+      continue;
+    }
+
+    printf("Data from %s: %s\n", inet_ntoa(si_other.sin_addr), buf);
     memset(buf, 0, BUFFER_LENGTH);
   }
 }
