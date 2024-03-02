@@ -47,5 +47,7 @@ int main(int argc, char **argv) {
       perror("sendto");
       exit(1);
     }
+
+    memset(buffer, 0, BUFFER_LENGTH);
   }
 }

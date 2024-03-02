@@ -57,5 +57,6 @@ int main(int argc, char **argv) {
     }
 
     printf("Data:\n%s\n", buf);
+    memset(buf, 0, BUFFER_LENGTH);
   }
 }
